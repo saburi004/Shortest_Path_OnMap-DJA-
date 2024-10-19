@@ -1,0 +1,92 @@
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shortest Path Finder</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+
+</head>
+<body style="display: flex;justify-content: center;align-items: center;text-align: center;background-color: black;" >
+<image src="https://s.yimg.com/ny/api/res/1.2/Coatf8m0kPoY9wHCGJ_ekQ--/YXBwaWQ9aGlnaGxhbmRlcjt3PTY0MDtoPTM2MA--/https://media.zenfs.com/en/space_311/b9e4448a95b0f8f97e96d51e9a796c50" style="height: 550px;width: 900px;margin-top: 100px;"></image>
+    <div class="container" style="margin-top: 100px;">
+        <div><h1 style="color: white;">Shortest Path Visualization</h1><br><h5 style="color: white;">Dijktra's Algorithm</h5></div><br>
+       <div> <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#locationModal">Enter Locations</button></div>
+    
+        <div class="modal fade" id="locationModal" tabindex="-1" aria-labelledby="locationModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="locationModalLabel">Enter Locations</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="locationForm">
+                            <div class="mb-3">
+                                <label for="sourceName" class="form-label">Source Name</label>
+                                <input type="text" class="form-control" id="sourceName" required placeholder="e.g. Pune Station">
+                            </div>
+                            <div class="mb-3">
+                                <label for="destinationName" class="form-label">Destination Name</label>
+                                <input type="text" class="form-control" id="destinationName" required placeholder="e.g. Shivaji Nagar">
+                            </div>
+                            <button type="submit" class="btn btn-primary">Calculate Path</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+
+    <script>
+    $(document).ready(function() {
+        $('#locationForm').on('submit', function(e) {
+            e.preventDefault();
+
+            // Get source and destination names from the form
+            var sourceName = $('#sourceName').val().trim();
+            var destinationName = $('#destinationName').val().trim();
+
+            // Check if both source and destination names are provided
+            if (!sourceName || !destinationName) {
+                alert("Please enter both source and destination names.");
+                return;
+            }
+
+            // Send the location names to the Flask backend via AJAX
+            $.ajax({
+                type: "POST",
+                url: "http://localhost:5000/calculate_shortest_path",  // Change 5000 to your Flask port if different
+                contentType: "application/json",
+                data: JSON.stringify({
+                    source_name: sourceName,
+                    destination_name: destinationName
+                }),
+                success: function(response) {
+                    console.log(response);
+                    // Load the generated map file into the div
+                    window.open(`http://localhost:5000/shortest_path_map`, '_blank');  // Open the map in a new tab
+                },
+                error: function(xhr) {
+                    console.error(xhr.responseText);
+                }
+            });
+
+            // Close the modal
+            $('#locationModal').modal('hide');
+        });
+    });
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
+
+</body>
+</html>
+
